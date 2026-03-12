@@ -1,0 +1,11 @@
+Company Name: irohub infotech
+
+We are a software development company specializing in AI, web development, and cloud solutions.
+
+Our hiring process includes:
+1. Resume screening
+2. ATS scoring
+3. Technical interview
+4. HR interview
+
+Candidates must have strong knowledge of Python, Django, React, and SQL.

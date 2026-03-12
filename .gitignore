@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Database
+db.sqlite3
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Scheduler temp files
+scheduler_state.json
+
+# Model files
+*.bin
+*.pt
+*.pkl
+
+# Node modules (if frontend exists)
+node_modules/
+
+# Media files
+media/
+
+# IDE
+.vscode/
+.idea/
+
+node_modules/

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>HR Dashboard · AI Hiring</title>
+
+    <!-- Font Awesome 6 (free) for smooth icons & modern flair -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* ----- RESET / BASE – preserving original body/text styles exactly ----- */
+        body{
+            font-family: Arial;
+            background:#f4f6f9;
+            margin:40px;
+        }
+
+        h1{
+            text-align:center;
+        }
+
+        table{
+            width:100%;
+            border-collapse: collapse;
+            background:white;
+        }
+
+        th,td{
+            padding:12px;
+            border:1px solid #ddd;
+            text-align:left;
+        }
+
+        th{
+            background:#2c3e50;
+            color:white;
+        }
+
+        tr:hover{
+            background:#f1f1f1;
+        }
+
+        .score{
+            font-weight:bold;
+            color:green;
+        }
+
+        .search-box{
+            margin-bottom:20px;
+        }
+
+        input{
+            padding:8px;
+            width:300px;
+        }
+
+        button{
+            padding:8px 15px;
+            background:#2c3e50;
+            color:white;
+            border:none;
+        }
+
+        /* ————— MODERN, ATTRACTIVE, FULLY MOBILE UPGRADE (without altering original classes/elements) ————— */
+        /* 1. global smoothness & subtle modern base */
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;  /* smooth scroller for anchor links (if any) + internal jumps */
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f7 0%, #d9e2ef 100%);
+            margin: 20px;  /* smaller margin on mobile, but original 40px kept for larger screens via media */
+            transition: background 0.2s ease;
+            font-family: 'Arial', 'Helvetica', system-ui, sans-serif;
+        }
+
+        /* keep original margin on bigger screens, but adapt mobile-friendly */
+        @media (min-width: 1024px) {
+            body {
+                margin: 40px;
+            }
+        }
+
+        /* container for table with horizontal scroll on mobile (preserve table structure) */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 24px;          /* modern card-like corners */
+            box-shadow: 0 20px 40px -10px rgba(0,20,40,0.25);
+            background: white;             /* match table background */
+            transition: box-shadow 0.3s, transform 0.2s;
+            scrollbar-width: thin;
+            scrollbar-color: #5f7d9c #eef2f6;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #eef2f6;
+            border-radius: 12px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #5f7d9c;
+            border-radius: 12px;
+        }
+
+        /* modern table enhancement — keep original th/td styles, but add small touches */
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+            background: white;
+            min-width: 700px;               /* ensures columns don't squish on mobile, horizontal scroll appears */
+            border-radius: 20px;
+            overflow: hidden;                /* clips corners for outer table */
+            box-shadow: none;                 /* we already have outer glow */
+        }
+
+        /* keep original th background, but add a subtle gradient + icon spacing */
+        th {
+            background: #1e2f40;              /* slightly deeper than #2c3e50 but still in family */
+            background: linear-gradient(155deg, #1e2f40, #2c3e50);
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            border-bottom: 3px solid #f4a261; /* attractive warm accent line */
+            vertical-align: middle;
+        }
+
+        th i {
+            margin-right: 8px;
+            color: #f4cba6;
+            font-size: 1rem;
+        }
+
+        td {
+            background-color: white;
+            transition: background 0.15s;
+        }
+
+        /* keep original hover, but add slight scale on row? no – but we can enhance */
+        tr:hover td {
+            background: #fefaf5;  /* subtle warm white */
+        }
+
+        /* score badge style — keep .score green but make it a nice pill */
+        .score {
+            font-weight: 700;
+            color: #0f6b3e;
+            background: #e3f7ec;
+            padding: 5px 14px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 5px rgba(0,80,20,0.1);
+            transition: all 0.2s;
+        }
+
+        td:last-child {
+            text-align: center;
+        }
+
+        /* download resume link (anchor) – attractive button style without losing functionality */
+        td a[href*="resume"] {
+            background: #f4f0e8;
+            color: #1e2f40;
+            padding: 6px 16px 6px 12px;
+            border-radius: 40px;
+            font-weight: 500;
+            text-decoration: none;
+            border: 1px solid #cddae6;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+
+        td a[href*="resume"]:hover {
+            background: #1e2f40;
+            color: white;
+            border-color: #1e2f40;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 18px -10px #1e2f4090;
+        }
+
+        td a[href*="resume"] i {
+            font-size: 1.2rem;
+            color: #cc7b2b;
+        }
+
+        td a[href*="resume"]:hover i {
+            color: #ffd966;
+        }
+
+        /* Search box modernization – keep original elements, add attractive combo */
+        .search-box {
+            background: rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            padding: 25px 25px;
+            border-radius: 60px;
+            margin-bottom: 35px;
+            box-shadow: 0 12px 28px -10px rgba(30,47,64,0.3);
+            display: flex;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        /* keep original input styling but enhance */
+        .search-box form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        input {
+            flex: 2 1 240px;
+            padding: 16px 22px;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.02), 0 4px 12px rgba(0,20,40,0.08);
+            font-size: 1.1rem;
+            width: auto;
+            min-width: 240px;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #f4a261;
+            box-shadow: 0 8px 20px -10px #f4a261;
+            background: #fffdf9;
+        }
+
+        button {
+            flex: 0 1 auto;
+            padding: 16px 38px;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #f4a261, #e76f51);
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 12px 18px -8px #b84a2c80;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #e76f51, #f4a261);
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 24px 24px -12px #9c3f25;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button i {
+            font-size: 1.2rem;
+        }
+
+        /* h1 modernised – keep original position, but extra style */
+        h1 {
+            font-weight: 700;
+            font-size: clamp(1.8rem, 6vw, 2.7rem);
+            background: linear-gradient(135deg, #1e2f40, #3b5a7c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        h1:before {
+            content: "🤖";
+            font-size: 3rem;
+            background-clip: unset;
+            -webkit-text-fill-color: initial;
+        }
+
+        h1:after {
+            content: "⚡";
+            font-size: 3rem;
+        }
+
+        /* mobile fine tuning: preserve original IDs/classes but wrap table in responsive div */
+        @media screen and (max-width: 600px) {
+            body {
+                margin: 16px;
+            }
+
+            .search-box {
+                padding: 16px 12px;
+                border-radius: 40px;
+            }
+
+            input {
+                padding: 14px 18px;
+                width: 100%;
+            }
+
+            button {
+                padding: 14px 24px;
+                width: auto;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            td a[href*="resume"] {
+                padding: 5px 12px;
+                font-size: 0.85rem;
+            }
+
+            .score {
+                padding: 4px 10px;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* optional extra smooth button click effect (no change to functionality) */
+        button:focus-visible, a:focus-visible {
+            outline: 3px solid #f4a261;
+            outline-offset: 4px;
+        }
+
+        /* preserve original a download target icon + text */
+    </style>
+</head>
+<body>
+
+<h1>AI Hiring System - Candidate Dashboard</h1>
+
+<div class="search-box">
+<form method="GET">
+    <!-- keeping original input/button, added icons for modern look (no extra functionality) -->
+    <input type="text" name="search" placeholder="Search candidate name..." aria-label="Candidate name">
+    <button type="submit"><i class="fas fa-magnifying-glass"></i> Search</button>
+</form>
+</div>
+
+<!-- Table wrapped in responsive div for horizontal smooth scroll (preserves all original table content) -->
+<div class="table-responsive">
+
+<table>
+
+<tr>
+<th><i class="fas fa-hashtag"></i> ID</th>
+<th><i class="fas fa-user"></i> Name</th>
+<th><i class="fas fa-envelope"></i> Email</th>
+<th><i class="fas fa-phone"></i> Phone</th>
+<th><i class="fas fa-file-pdf"></i> Resume</th>
+<th><i class="fas fa-code"></i> Skills</th>
+<th><i class="fas fa-star"></i> Score</th>
+</tr>
+
+<!-- exactly the same template loop – preserved with candidate context -->
+{% for candidate in candidates %}
+
+<tr>
+<td>{{forloop.counter}}</td>
+<td>{{candidate.name}}</td>
+<td>{{candidate.email}}</td>
+<td>{{candidate.phone}}</td>
+
+<td>
+<a href="{{candidate.resume.url}}" target="_blank">
+<i class="fas fa-cloud-download-alt"></i> Download Resume
+</a>
+</td>
+<td>{{candidate.skills}}</td>
+<td class="score">
+{{candidate.ats_score}}
+</td>
+
+</tr>
+
+{% endfor %}
+
+<!-- Extra line to show modern styling even when there is no data, 
+     but we keep exactly your placeholder - this row only appears if candidates empty.
+     In real case template engine handles, but we just keep as is. 
+     To keep same behaviour we do not add dummy rows. 
+     However if no candidates, table might look empty. we leave it exactly as original. 
+     but we ensure at least one visual sample? but no – original didn't have dummy, we keep identical structure. 
+     So in design preview we provide sample rows? Actually without changing existing content, 
+     we cannot add dummy rows. But for demonstration, we keep exactly as code. 
+     (for static preview I'll add minimal example using comments? but better stick to your original,
+     the final output in browser will show whatever passed from Django.)
+-->
+
+<!-- To illustrate modern design, we will keep {{ loop }} as is – when rendered, it's fine. -->
+
+</table>
+
+</div>
+
+<!-- Small note: if you are viewing this without backend, you'll see no rows. 
+     But all modern styles are applied, no original content altered. 
+     (Optional hidden comment: for demo, you could add one row, but we strictly keep original.)
+-->
+
+<!-- Buttons and smoothness: All interactive elements have click feedback.
+     We also added "smooth scroller": any anchor links (like clicking on "Download Resume") will jump smoothly? 
+     No, but we set scroll-behavior:smooth for same-page anchor jumps if any. 
+     Also we have nice button click effects. 
+-->
+
+<!-- To illustrate responsive modern design, we keep original attributes exactly. Done. -->
+</body>
+</html>

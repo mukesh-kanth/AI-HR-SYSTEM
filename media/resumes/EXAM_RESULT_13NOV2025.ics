@@ -1,0 +1,59 @@
+BEGIN:VCALENDAR
+PRODID:-//Internship Studio//iCAT Calendar//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VTIMEZONE
+TZID:Asia/Kolkata
+X-LIC-LOCATION:Asia/Kolkata
+BEGIN:STANDARD
+TZOFFSETFROM:+0530
+TZOFFSETTO:+0530
+TZNAME:IST
+DTSTART:19700101T000000
+END:STANDARD
+END:VTIMEZONE
+
+BEGIN:VEVENT
+UID:exam-result-event-20251113T100000@internshipstudio.com
+DTSTAMP:20251105T101604Z
+SUMMARY:EXAM RESULT
+DTSTART;TZID=Asia/Kolkata:20251113T100000
+DTEND;TZID=Asia/Kolkata:20251113T103000
+DESCRIPTION:Check your iCAT exam result at https://dashboard.internshipstudio.com/login
+LOCATION:https://dashboard.internshipstudio.com/login
+URL:https://dashboard.internshipstudio.com/login
+
+BEGIN:VALARM
+TRIGGER:-PT30M
+ACTION:DISPLAY
+DESCRIPTION:Reminder: Your EXAM RESULT is in 30 minutes!
+END:VALARM
+
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+DESCRIPTION:Your EXAM RESULT is available now. Check it immediately!
+END:VALARM
+
+END:VEVENT
+
+BEGIN:VEVENT
+UID:exam-result-followup-20251113T110000@internshipstudio.com
+DTSTAMP:20251105T101604Z
+SUMMARY:Follow-up: Check EXAM RESULT
+DTSTART;TZID=Asia/Kolkata:20251113T110000
+DTEND;TZID=Asia/Kolkata:20251113T111500
+DESCRIPTION:Follow up to ensure you’ve checked your iCAT exam result.
+LOCATION:https://dashboard.internshipstudio.com/login
+URL:https://dashboard.internshipstudio.com/login
+
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+DESCRIPTION:It’s 11:00 AM — follow up on your EXAM RESULT.
+END:VALARM
+
+END:VEVENT
+
+END:VCALENDAR

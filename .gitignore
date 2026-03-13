@@ -12,8 +12,7 @@ env/
 # Environment variables
 .env
 
-# Database
-db.sqlite3
+
 
 # Logs
 *.log
@@ -37,7 +36,7 @@ scheduler_state.json
 node_modules/
 
 # Media files
-media/
+
 
 # IDE
 .vscode/

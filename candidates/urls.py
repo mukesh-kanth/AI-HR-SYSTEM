@@ -9,6 +9,6 @@ router.register(r'candidates', CandidateViewSet, basename='candidates')
 
 
 urlpatterns = [
-    path('', include(router.urls)),
-    path('dashboard/', dashboard, name='dashboard'),
+    path('api/', include(router.urls)),
+    path('', dashboard, name='dashboard'),
 ]

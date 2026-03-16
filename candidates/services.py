@@ -4,6 +4,7 @@ from resume_parser.parser import extract_text_from_resume
 from resume_parser.skills import extract_skills
 from resume_parser.ats import calculate_ats_score
 
+
 from email_service.email_sender import (
     send_selected_email,
     send_rejected_email,

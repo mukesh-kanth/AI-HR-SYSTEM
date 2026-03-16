@@ -4,14 +4,21 @@ from django.conf import settings
 
 def save_attachment(filename, content):
 
-    resume_folder = os.path.join(settings.MEDIA_ROOT, "resumes")
+    try:
+        if not filename or not content:
+            return None
 
-    if not os.path.exists(resume_folder):
-        os.makedirs(resume_folder)
+        upload_dir = os.path.join(settings.MEDIA_ROOT, "resumes")
 
-    file_path = os.path.join(resume_folder, filename)
+        os.makedirs(upload_dir, exist_ok=True)
 
-    with open(file_path, "wb") as f:
-        f.write(content)
+        file_path = os.path.join(upload_dir, filename)
 
-    return file_path
+        with open(file_path, "wb") as f:
+            f.write(content)
+
+        return file_path
+
+    except Exception as e:
+        print("Attachment save error:", e)
+        return None

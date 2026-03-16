@@ -1,73 +1,110 @@
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
+import os
 
 
-def send_selected_email(candidate_email, candidate_name):
+# -----------------------------
+# 1️⃣ Resume Received Email
+# -----------------------------
+def send_auto_reply(email, name):
 
-    subject = "Interview Shortlisted"
-
-    message = f"""
-Hello {candidate_name},
-
-Congratulations! 
-
-Your resume has been shortlisted by our AI hiring system.
-
-Our HR team will contact you shortly regarding the next steps in the recruitment process.
-
-If you have any questions or need more information, you can ask our AI HR Assistant here:
-https://chatbot-6zixpkxpfugd8zpfwheail.streamlit.app/
-
-Best Regards,
-HR Team
-
-"""
-
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [candidate_email],
-        fail_silently=False
-    )
-
-
-def send_rejected_email(candidate_email, candidate_name):
-
-    subject = "Application Status"
+    subject = "Application Received"
 
     message = f"""
-Hello {candidate_name},
+Hello {name},
 
 Thank you for applying.
 
-After reviewing your resume, we regret to inform you that you were not shortlisted for this position.
+Your resume has been successfully received and is being reviewed by our AI HR system.
 
-We encourage you to apply again in the future.
-
-Best Regards,
+Best Regards
 HR Team
 """
 
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [candidate_email],
-        fail_silently=False
-    )
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
 
 
-def forward_resume_to_hr(resume_path):
+# -----------------------------
+# 2️⃣ Shortlisted Email
+# -----------------------------
+def send_selected_email(email, name):
 
-    subject = "New Candidate Shortlisted"
+    subject = "Application Shortlisted"
 
-    message = "A candidate has been shortlisted by the AI system."
+    message = f"""
+Hello {name},
 
-    send_mail(
-        subject,
-        message,
-        settings.DEFAULT_FROM_EMAIL,
-        [settings.HR_EMAIL],
-        fail_silently=False
-    )
+Congratulations!
+
+Your resume has been shortlisted by our AI hiring system.
+
+Our HR team will contact you shortly.
+
+If you have questions you can ask our HR chatbot:
+https://chatbot-6zixpkxpfugd8zpfwheail.streamlit.app/
+
+Best Regards
+HR Team
+"""
+
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+
+
+# -----------------------------
+# 3️⃣ Rejected Email
+# -----------------------------
+def send_rejected_email(email, name):
+
+    subject = "Application Update"
+
+    message = f"""
+Hello {name},
+
+Thank you for applying.
+
+After reviewing your resume, we regret to inform you that you were not selected for this position.
+
+We encourage you to apply again in the future.
+
+Best Regards
+HR Team
+"""
+
+    send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+
+
+# -----------------------------
+# 4️⃣ Forward Resume to HR
+# -----------------------------
+def forward_resume_to_hr(candidate):
+
+    try:
+
+        subject = f"New Candidate Resume: {candidate.name}"
+
+        message = f"""
+A new candidate has applied.
+
+Name: {candidate.name}
+Email: {candidate.email}
+
+Please review the attached resume.
+"""
+
+        email = EmailMessage(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [settings.HR_EMAIL]  # HR email in settings.py
+        )
+
+        if candidate.resume:
+            resume_path = os.path.join(settings.MEDIA_ROOT, candidate.resume.name)
+            email.attach_file(resume_path)
+
+        email.send()
+
+        print("Resume forwarded to HR")
+
+    except Exception as e:
+        print("Error forwarding resume:", e)

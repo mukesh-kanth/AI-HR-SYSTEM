@@ -1,5 +1,6 @@
 import imaplib
 import email
+import os
 from django.conf import settings
 
 from email_service.attachment_handler import save_attachment
@@ -8,12 +9,12 @@ from candidates.services import process_resume
 
 
 def read_resume_emails():
+    mail = None
 
     try:
-        print("Connecting to Gmail...")
+        print("📧 Connecting to Gmail...")
 
         mail = imaplib.IMAP4_SSL("imap.gmail.com")
-
         mail.login(
             settings.EMAIL_HOST_USER,
             settings.EMAIL_HOST_PASSWORD
@@ -25,7 +26,7 @@ def read_resume_emails():
 
         email_ids = messages[0].split()
 
-        print(f"Found {len(email_ids)} new emails")
+        print(f"📨 Found {len(email_ids)} new emails")
 
         for mail_id in email_ids:
 
@@ -33,43 +34,75 @@ def read_resume_emails():
 
             for response_part in msg_data:
 
-                if isinstance(response_part, tuple):
+                if not isinstance(response_part, tuple):
+                    continue
 
-                    msg = email.message_from_bytes(response_part[1])
+                msg = email.message_from_bytes(response_part[1])
 
-                    sender = email.utils.parseaddr(msg["From"])[1]
+                sender = email.utils.parseaddr(msg.get("From", ""))[1]
 
-                    print("Processing email from:", sender)
+                if not sender:
+                    print("⚠ Sender not found, skipping email")
+                    continue
 
-                    for part in msg.walk():
+                print("Processing email from:", sender)
 
-                        if part.get_content_disposition() == "attachment":
+                for part in msg.walk():
 
-                            filename = part.get_filename()
+                    if part.get_content_disposition() != "attachment":
+                        continue
 
-                            if not filename:
-                                continue
+                    filename = part.get_filename()
 
-                            content = part.get_payload(decode=True)
+                    if not filename:
+                        print("⚠ Attachment has no filename")
+                        continue
 
-                            file_path = save_attachment(filename, content)
+                    content = part.get_payload(decode=True)
 
-                            candidate = Candidate.objects.create(
-                                name=sender.split("@")[0],
-                                email=sender,
-                                phone="0000000000",
-                                resume=file_path.replace(
-                                    settings.MEDIA_ROOT + "\\",
-                                    ""
-                                )
-                            )
+                    if not content:
+                        print("⚠ Attachment content empty")
+                        continue
 
-                            process_resume(candidate)
+                    file_path = save_attachment(filename, content)
 
-        mail.logout()
+                    if not file_path:
+                        print("⚠ Failed to save attachment")
+                        continue
 
-        print("Email processing completed")
+                    print("✅ Saved attachment:", file_path)
+
+                    resume_path = os.path.relpath(
+                        file_path,
+                        settings.MEDIA_ROOT
+                    ).replace("\\", "/")
+
+                    candidate = Candidate.objects.filter(email=sender).first()
+
+                    if not candidate:
+                        candidate = Candidate.objects.create(
+                            name=sender.split("@")[0],
+                            email=sender,
+                            phone="0000000000",
+                            resume=resume_path
+                        )
+                    else:
+                        # update resume if new one received
+                        candidate.resume = resume_path
+                        candidate.save()
+
+                    process_resume(candidate)
+
+        print("✅ Email processing completed")
 
     except Exception as e:
+        import traceback
+        print("❌ Error reading emails:", e)
+        traceback.print_exc()
 
-        print("Error reading emails:", e)
+    finally:
+        if mail:
+            try:
+                mail.logout()
+            except:
+                pass
